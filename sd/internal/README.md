@@ -1,0 +1,1 @@
+**copy from [https://github.com/go-kit/kit/tree/master/sd/internal](https://github.com/go-kit/kit/tree/master/sd/internal)**
