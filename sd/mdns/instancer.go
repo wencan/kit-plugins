@@ -3,7 +3,6 @@ package mdns
 import (
 	"context"
 	"fmt"
-	stdlog "log"
 	"net"
 	"sync"
 	"time"
@@ -59,6 +58,9 @@ func NewInstancer(service string, opts InstancerOptions, logger log.Logger) (*In
 		wg:      &wg,
 	}
 
+	// first lookup
+	inst.refresh(ctx)
+
 	go inst.loop(ctx)
 
 	return inst, nil
@@ -68,13 +70,6 @@ func (inst *Instancer) loop(ctx context.Context) {
 	inst.wg.Add(1)
 	defer inst.wg.Done()
 
-	// first lookup
-	inst.wg.Add(1)
-	go func() {
-		defer inst.wg.Done()
-		inst.refresh(ctx)
-	}()
-
 	refreshTicker := time.NewTicker(inst.opts.RefreshInterval)
 	defer refreshTicker.Stop()
 
@@ -83,7 +78,6 @@ func (inst *Instancer) loop(ctx context.Context) {
 		case <-refreshTicker.C:
 			inst.wg.Add(1)
 			go func() {
-				stdlog.Println("Refresh")
 				defer inst.wg.Done()
 				inst.refresh(ctx)
 			}()
