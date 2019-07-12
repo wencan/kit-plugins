@@ -1,7 +1,6 @@
 package mdns
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
 	"net"
@@ -60,11 +59,12 @@ func TestMDNSInstancer(t *testing.T) {
 	}
 	defer instancer.Stop()
 
-	// Lookup instances
-	have, err := instancer.lookup(context.Background())
-	if err != nil {
-		t.Fatal(err)
+	// Get the state of discovery (instances or error)
+	event := instancer.State()
+	if event.Err != nil {
+		t.Fatal(event.Err)
 	}
+	have := event.Instances
 
 	sort.Strings(want)
 	sort.Strings(have)

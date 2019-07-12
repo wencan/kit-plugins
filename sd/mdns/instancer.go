@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/mdns"
-
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/sd"
+	"github.com/hashicorp/mdns"
+
 	"github.com/wencan/kit-plugins/sd/internal/instance"
 )
 
@@ -166,6 +166,11 @@ func (inst *Instancer) Register(ch chan<- sd.Event) {
 // Deregister implements Instancer.
 func (inst *Instancer) Deregister(ch chan<- sd.Event) {
 	inst.cache.Deregister(ch)
+}
+
+// State returns the current state of discovery (instances or error) as sd.Event
+func (inst *Instancer) State() sd.Event {
+	return inst.cache.State()
 }
 
 // Stop terminates the Instancer.
