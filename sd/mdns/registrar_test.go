@@ -14,13 +14,13 @@ import (
 )
 
 func newTestRegistrar(serviceName string, port int) (*Registrar, string, error) {
-	ips := []net.IP{net.ParseIP("127.0.0.1")}
+	ips := []net.IP{net.IPv4(127, 0, 0, 1)}
 	instance := fmt.Sprintf("%s:%d", ips[0].String(), port)
 
 	service := Service{
 		Instance: instance,
 		Service:  serviceName,
-		Ips:      ips,
+		Ips:      ips, // Just for test
 		Port:     port,
 	}
 	registrar, err := NewRegistrar(service, log.NewNopLogger())

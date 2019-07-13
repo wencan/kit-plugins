@@ -1,9 +1,11 @@
 package mdns
 
 import (
-	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
+	"os"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
@@ -16,7 +18,7 @@ func Example() {
 		instance   = "127.0.0.1:8080"
 		port       = 8080
 
-		logger = log.NewLogfmtLogger(&bytes.Buffer{})
+		logger = log.NewLogfmtLogger(os.Stdout)
 	)
 
 	// Build the registrar
@@ -24,10 +26,11 @@ func Example() {
 		Instance: instance,
 		Service:  serverName,
 		Port:     port,
+		Ips:      []net.IP{net.IPv4(127, 0, 0, 1)}, // Just for test
 	}
 	registrar, err := NewRegistrar(service, logger)
 	if err != nil {
-		logger.Log(err)
+		fmt.Println(err)
 		return
 	}
 	// Register my instance
@@ -37,15 +40,24 @@ func Example() {
 	// Build the instancer
 	instancer, err := NewInstancer(serverName, InstancerOptions{}, logger)
 	if err != nil {
-		logger.Log(err)
+		fmt.Println(err)
 		return
 	}
 
 	// Build the endpoint
 	endpointer := sd.NewEndpointer(instancer, fakeFactory, logger)
-	_ = endpointer
+	_, err = endpointer.Endpoints()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Output:
+	// 127.0.0.1:8080
 }
 
 func fakeFactory(instance string) (endpoint.Endpoint, io.Closer, error) {
+	// Print instance
+	fmt.Println(instance)
+
 	return endpoint.Nop, ioutil.NopCloser(nil), nil
 }

@@ -14,7 +14,7 @@ import (
 )
 
 func newTestServer(serviceName string, port int) (*mdns.Server, string, error) {
-	ips := []net.IP{net.ParseIP("127.0.0.1")}
+	ips := []net.IP{net.IPv4(127, 0, 0, 1)} // Just for test
 	instance := fmt.Sprintf("%s:%d", ips[0].String(), port)
 
 	service, err := mdns.NewMDNSService(instance, serviceName, "", "", port, ips, nil)
