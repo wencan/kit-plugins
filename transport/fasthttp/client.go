@@ -2,7 +2,6 @@ package fasthttp
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 
 	"github.com/go-kit/kit/endpoint"
@@ -18,6 +17,7 @@ type ClientFinalizerFunc func(c context.Context, req *fasthttp.Request, resp *fa
 
 // Client wraps a URL and provides a method that implements endpoint.Endpoint.
 type Client struct {
+	client          *fasthttp.Client
 	method          string
 	tgt             *url.URL
 	enc             EncodeRequestFunc
@@ -58,6 +58,12 @@ func NewClient(
 // ClientOption sets an optional parameter for clients.
 type ClientOption func(*Client)
 
+// SetClient sets the underlying Fast HTTP client used for requests.
+// By default, fasthttp.defaultClient is used.
+func SetClient(client *fasthttp.Client) ClientOption {
+	return func(c *Client) { c.client = client }
+}
+
 // ClientBefore sets the RequestFuncs that are applied to the outgoing HTTP
 // request before it's invoked.
 func ClientBefore(before ...RequestFunc) ClientOption {
@@ -75,6 +81,14 @@ func ClientAfter(after ...ClientResponseFunc) ClientOption {
 // By default, no finalizer is registered.
 func ClientFinalizer(f ...ClientFinalizerFunc) ClientOption {
 	return func(s *Client) { s.finalizer = append(s.finalizer, f...) }
+}
+
+// do performs the given http request and fills the given http response.
+func (client Client) do(req *fasthttp.Request, resp *fasthttp.Response) error {
+	if client.client != nil {
+		return client.client.Do(req, resp)
+	}
+	return fasthttp.Do(req, resp)
 }
 
 // Endpoint returns a usable endpoint that invokes the remote endpoint.
@@ -109,7 +123,7 @@ func (client Client) Endpoint() endpoint.Endpoint {
 		}
 
 		resp = fasthttp.AcquireResponse()
-		err = fasthttp.Do(req, resp)
+		err = client.do(req, resp)
 		fasthttp.ReleaseRequest(req)
 		if err != nil {
 			fasthttp.ReleaseResponse(resp)
@@ -130,18 +144,4 @@ func (client Client) Endpoint() endpoint.Endpoint {
 
 		return response, nil
 	}
-}
-
-// EncodeJSONRequest is an EncodeRequestFunc that serializes the request as a
-// JSON object to the Request body. Many JSON-over-HTTP services can use it as
-// a sensible default. If the request implements Headerer, the provided headers
-// will be applied to the request.
-func EncodeJSONRequest(ctx context.Context, r *fasthttp.Request, request interface{}) error {
-	r.Header.SetContentType("application/json; charset=utf-8")
-	if headerer, ok := request.(Headerer); ok {
-		for k := range headerer.Headers() {
-			r.Header.Set(k, headerer.Headers().Get(k))
-		}
-	}
-	return json.NewEncoder(r.BodyWriter()).Encode(request)
 }

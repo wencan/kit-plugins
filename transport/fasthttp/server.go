@@ -146,31 +146,6 @@ func (s Server) ServeFastHTTP(ctx *fasthttp.RequestCtx) {
 	}
 }
 
-// EncodeJSONResponse is a EncodeResponseFunc that serializes the response as a
-// JSON object to the ResponseWriter. Many JSON-over-HTTP services can use it as
-// a sensible default. If the response implements Headerer, the provided headers
-// will be applied to the response. If the response implements StatusCoder, the
-// provided StatusCode will be used instead of 200.
-func EncodeJSONResponse(_ context.Context, resp *fasthttp.Response, response interface{}) error {
-	resp.Header.SetContentType("application/json; charset=utf-8")
-	if headerer, ok := response.(Headerer); ok {
-		for k, values := range headerer.Headers() {
-			for _, v := range values {
-				resp.Header.Add(k, v)
-			}
-		}
-	}
-	code := http.StatusOK
-	if sc, ok := response.(StatusCoder); ok {
-		code = sc.StatusCode()
-	}
-	resp.SetStatusCode(code)
-	if code == http.StatusNoContent {
-		return nil
-	}
-	return json.NewEncoder(resp.BodyWriter()).Encode(response)
-}
-
 // DefaultErrorEncoder writes the error to the ResponseWriter, by default a
 // content type of text/plain, a body of the plain text of the error, and a
 // status code of 500. If the error implements Headerer, the provided headers
