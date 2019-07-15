@@ -25,7 +25,7 @@ type Client struct {
 	newResponse     NewObjectFunc
 	releaseResponse ReleaseObjectFunc
 	before          []RequestFunc
-	after           []ClientResponseFunc
+	after           []ResponseFunc
 	finalizer       []ClientFinalizerFunc
 }
 
@@ -47,7 +47,7 @@ func NewClient(
 		newResponse:     newResponse,
 		releaseResponse: releaseResponse,
 		before:          []RequestFunc{},
-		after:           []ClientResponseFunc{},
+		after:           []ResponseFunc{},
 	}
 	for _, option := range options {
 		option(client)
@@ -70,10 +70,10 @@ func ClientBefore(before ...RequestFunc) ClientOption {
 	return func(client *Client) { client.before = append(client.before, before...) }
 }
 
-// ClientAfter sets the ClientResponseFuncs applied to the incoming HTTP
+// ClientAfter sets the ResponseFuncs applied to the incoming HTTP
 // request prior to it being decoded. This is useful for obtaining anything off
 // of the response and adding onto the context prior to decoding.
-func ClientAfter(after ...ClientResponseFunc) ClientOption {
+func ClientAfter(after ...ResponseFunc) ClientOption {
 	return func(client *Client) { client.after = append(client.after, after...) }
 }
 

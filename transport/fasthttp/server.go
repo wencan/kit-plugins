@@ -31,7 +31,7 @@ type Server struct {
 	enc             EncodeResponseFunc
 	releaseResponse ReleaseObjectFunc
 	before          []RequestFunc
-	after           []ServerResponseFunc
+	after           []ResponseFunc
 	errorEncoder    ErrorEncoder
 	finalizer       []ServerFinalizerFunc
 	errorHandler    transport.ErrorHandler
@@ -72,7 +72,7 @@ func ServerBefore(before ...RequestFunc) ServerOption {
 
 // ServerAfter functions are executed on the HTTP response writer after the
 // endpoint is invoked, but before anything is written to the client.
-func ServerAfter(after ...ServerResponseFunc) ServerOption {
+func ServerAfter(after ...ResponseFunc) ServerOption {
 	return func(s *Server) { s.after = append(s.after, after...) }
 }
 
