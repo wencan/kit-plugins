@@ -66,9 +66,9 @@ func ExampleServer_router() {
 	helloServer := fasthttp_transport.NewServer(
 		newServerHelloEndpoint(newHelloResponse),
 		encodeHelloRequest,
+		fasthttp_transport.EncodeJSONResponse,
 		newHelloRequest,
 		releaseHelloRequest,
-		fasthttp_transport.EncodeJSONResponse,
 		releaseHelloResponse)
 
 	// Create router

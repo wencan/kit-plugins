@@ -26,9 +26,9 @@ type ServerFinalizerFunc func(c context.Context, req *fasthttp.Request, resp *fa
 type Server struct {
 	e               endpoint.Endpoint
 	dec             DecodeRequestFunc
+	enc             EncodeResponseFunc
 	newRequest      NewObjectFunc
 	releaseRequest  ReleaseObjectFunc
-	enc             EncodeResponseFunc
 	releaseResponse ReleaseObjectFunc
 	before          []RequestFunc
 	after           []ResponseFunc
@@ -40,17 +40,17 @@ type Server struct {
 // NewServer constructs a new server.
 func NewServer(e endpoint.Endpoint,
 	dec DecodeRequestFunc,
+	enc EncodeResponseFunc,
 	newRequest NewObjectFunc,
 	releaseRequest ReleaseObjectFunc,
-	enc EncodeResponseFunc,
 	releaseResponse ReleaseObjectFunc,
 	options ...ServerOption) *Server {
 	s := &Server{
 		e:               e,
 		dec:             dec,
+		enc:             enc,
 		newRequest:      newRequest,
 		releaseRequest:  releaseRequest,
-		enc:             enc,
 		releaseResponse: releaseResponse,
 		errorEncoder:    DefaultErrorEncoder,
 		errorHandler:    transport.NewLogErrorHandler(log.NewNopLogger()),

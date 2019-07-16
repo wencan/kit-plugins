@@ -61,9 +61,9 @@ func Example() {
 	server := fasthttp_transport.NewServer(
 		newServerEndpoint(newResponse),
 		fasthttp_transport.DecodeJSONRequest,
+		fasthttp_transport.EncodeJSONResponse,
 		newRequest,
 		releaseRequest,
-		fasthttp_transport.EncodeJSONResponse,
 		releaseResponse)
 
 	// Listen a random port
