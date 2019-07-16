@@ -1,2 +1,2 @@
-// Package protobuf provides Fast HTTP codec for protobuf.
+// Package protobuf provides fasthttp codec for protobuf.
 package protobuf

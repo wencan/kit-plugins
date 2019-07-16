@@ -91,7 +91,7 @@ func DecodeProtobufRequest(_ context.Context, r *fasthttp.Request, request inter
 }
 
 // EncodeProtobufResponse is a fasthttp_transport.EncodeResponseFunc that serializes
-// the response as a protobuf message object to the ResponseWriter. Many protobuf-over-HTTP
+// the response as a protobuf message object to the Response. Many protobuf-over-HTTP
 // services can use it as a sensible default. If the response implements Headerer,
 // the provided headers will be applied to the response. If the response implements
 // StatusCoder, the provided StatusCode will be used instead of 200.
@@ -133,7 +133,7 @@ func EncodeProtobufResponse(_ context.Context, resp *fasthttp.Response, response
 }
 
 // DecodeProtobufResponse is an fasthttp_transport.DecodeResponseFunc that deserializes
-// the response as a JSON object from the Response body. Many protobuf-over-HTTP
+// the response as a response object from the Response body. Many protobuf-over-HTTP
 // services can use it as a sensible default.
 func DecodeProtobufResponse(_ context.Context, resp *fasthttp.Response, response interface{}) error {
 	if !IngoreContentType {

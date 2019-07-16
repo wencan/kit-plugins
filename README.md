@@ -14,3 +14,7 @@ plugins repository of go-kit
     * [fasthttp](https://github.com/wencan/kit-plugins/tree/master/transport/fasthttp)
 
         Package fasthttp provides transport implementations for Fast HTTP.
+
+        * [protobuf](https://github.com/wencan/kit-plugins/tree/master/transport/fasthttp/protobuf)
+
+            Package protobuf provides fasthttp codec for protobuf.
