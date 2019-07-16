@@ -20,7 +20,7 @@ type ErrorEncoder func(ctx context.Context, err error, resp *fasthttp.Response)
 // ServerFinalizerFunc can be used to perform work at the end of an HTTP
 // request, after the response has been written to the client. The principal
 // intended use is for request logging.
-type ServerFinalizerFunc func(c context.Context, ctx *fasthttp.RequestCtx)
+type ServerFinalizerFunc func(c context.Context, req *fasthttp.Request, resp *fasthttp.Response, err error)
 
 // Server wraps an endpoint and provide fasthttp.RequestHandler method.
 type Server struct {
@@ -101,12 +101,13 @@ func ServerFinalizer(f ...ServerFinalizerFunc) ServerOption {
 
 // ServeFastHTTP provide fasthttp.RequestHandler method.
 func (s Server) ServeFastHTTP(ctx *fasthttp.RequestCtx) {
-	c := context.Background()
+	c := context.WithValue(context.Background(), ContextKeyRequestCtx, ctx)
+	var err error
 
 	if len(s.finalizer) > 0 {
 		defer func() {
 			for _, f := range s.finalizer {
-				f(c, ctx)
+				f(c, &ctx.Request, &ctx.Response, err)
 			}
 		}()
 	}
@@ -117,7 +118,7 @@ func (s Server) ServeFastHTTP(ctx *fasthttp.RequestCtx) {
 
 	request := s.newRequest()
 
-	err := s.dec(c, &ctx.Request, request)
+	err = s.dec(c, &ctx.Request, request)
 	if err != nil {
 		s.errorHandler.Handle(ctx, err)
 		s.errorEncoder(ctx, err, &ctx.Response)
@@ -125,7 +126,8 @@ func (s Server) ServeFastHTTP(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	response, err := s.e(c, request)
+	var response interface{}
+	response, err = s.e(c, request)
 	s.releaseRequest(request)
 	if err != nil {
 		s.errorHandler.Handle(ctx, err)

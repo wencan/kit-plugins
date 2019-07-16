@@ -6,6 +6,13 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+type contextKey int
+
+const (
+	// ContextKeyRequestCtx stored in context with value that *fasthttp.RequestCtx
+	ContextKeyRequestCtx contextKey = iota
+)
+
 // RequestFunc may take information from an HTTP request and put it into a
 // request context. In Servers, RequestFuncs are executed prior to invoking the
 // endpoint. In Clients, RequestFuncs are executed after creating the request
