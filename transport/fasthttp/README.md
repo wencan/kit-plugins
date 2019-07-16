@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/wencan/kit-plugins/transport/fasthttp?status.svg)](https://godoc.org/github.com/wencan/kit-plugins/transport/fasthttp)
+
 # fasthttp
 Package fasthttp provides transport implementations for Fast HTTP.
 

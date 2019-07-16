@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/wencan/kit-plugins/sd/mdns?status.svg)](https://godoc.org/github.com/wencan/kit-plugins/sd/mdns)
+
 # mdns
 Package mdns provides Instancer and Registrar implementations for mDNS.
 

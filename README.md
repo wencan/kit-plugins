@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/wencan/kit-plugins?status.svg)](https://godoc.org/github.com/wencan/kit-plugins)
+
 # kit-plugins
 plugins repository of go-kit
 
