@@ -22,6 +22,10 @@ type ErrorEncoder func(ctx context.Context, err error, resp *fasthttp.Response)
 // intended use is for request logging.
 type ServerFinalizerFunc func(c context.Context, req *fasthttp.Request, resp *fasthttp.Response, err error)
 
+// NopReleaser is an ReleaseObjectFunc that do nothing.
+// It's designed to be used in compatible servers.
+func NopReleaser(_ interface{}) {}
+
 // Server wraps an endpoint and provide fasthttp.RequestHandler method.
 type Server struct {
 	e               endpoint.Endpoint
@@ -59,6 +63,17 @@ func NewServer(e endpoint.Endpoint,
 		option(s)
 	}
 	return s
+}
+
+// NewCompatibleServer constructs a new compatible server.
+// It does not reuse response object to share endpoint with other transport servers.
+func NewCompatibleServer(e endpoint.Endpoint,
+	dec DecodeRequestFunc,
+	enc EncodeResponseFunc,
+	newRequest NewObjectFunc,
+	releaseRequest ReleaseObjectFunc,
+	options ...ServerOption) *Server {
+	return NewServer(e, dec, enc, newRequest, releaseRequest, NopReleaser, options...)
 }
 
 // ServerOption sets an optional parameter for servers.
