@@ -5,3 +5,4 @@ Package fasthttp provides transport implementations for Fast HTTP.
 
 # Features
 * Optimized for low memory usage.
+* Friendly to the [router](https://github.com/fasthttp/router)
